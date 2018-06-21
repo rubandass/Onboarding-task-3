@@ -3,15 +3,45 @@
 });
 
 
-//function newSale() {
-//    var self = this;
-//    self.Id("");
-//    self.CustomerId("");
-//    self.ProductId("");
-//    self.StoreId("");
-//    var inputDate = $('#dateInput').val("");
-//    self.DateSold = ko.observable(inputDate);
-//}
+function newSale() {
+    var self = this;
+    self.Id = ko.observable();
+    self.CustomerId = ko.observable().extend({
+        required: {
+            params: true,
+            message: "Please select Customer."
+        }
+
+    });
+
+    self.ProductId = ko.observable().extend({
+        required: {
+            params: true,
+            message: "Please select Product."
+        }
+
+    });
+    self.StoreId = ko.observable().extend({
+        required: {
+            params: true,
+            message: "Please select Store."
+        }
+
+    });
+
+    self.DateSold = ko.observable("").extend({
+        required: {
+            params: true,
+            message: "Please enter Date."
+        }
+    });
+
+    self.ModelErrors = ko.validation.group(self);
+    self.IsValid = ko.computed(function () {
+        self.ModelErrors.showAllMessages();
+        return self.ModelErrors().length === 0;
+    });
+}
 
 function saleModel(data) {
     var self = this;
@@ -21,11 +51,6 @@ function saleModel(data) {
     self.Product = ko.observable(data.Product);
     self.Store = ko.observable(data.Store);
 
-    //self.selectedCustomer = ko.observable(data.CustomerId);
-    //self.selectedProduct = ko.observable(data.ProductId);
-    //self.selectedStore = ko.observable(data.StoreId);
-    //self.DateSold = ko.observable(data.DateSold);
-
     self.CustomerId = ko.observable(data.CustomerId).extend({
         required: {
             params: true,
@@ -33,7 +58,6 @@ function saleModel(data) {
         }
 
     });
-
     self.ProductId = ko.observable(data.ProductId).extend({
         required: {
             params: true,
@@ -48,22 +72,13 @@ function saleModel(data) {
         }
 
     });
-    //self.DateSold = ko.observable(data.DateSold).extend({
-    //    required: {
-    //        params: true,
-    //        message: "Please enter Date."
-    //    }
-    //});
-
-
-
-    var rawSoldDate = new Date(data.DateSold);
-    var day = ("0" + rawSoldDate.getDate()).slice(-2);
-    var month = ("0" + (rawSoldDate.getMonth() + 1)).slice(-2);
-    var dateSold = rawSoldDate.getFullYear() + "-" + month + "-" + day; //JS accepts YYYY/MM/DD format.
+    var readDate = new Date(data.DateSold);  //JS accepts MM/DD/YYYY format.
+    var day = ("0" + readDate.getDate()).slice(-2);
+    var month = ("0" + (readDate.getMonth() + 1)).slice(-2);
+    var dateSold = readDate.getFullYear() + "-" + month + "-" + day; //HTML "date" accepts YYYY/MM/DD format.
     self.DateSold = ko.observable(dateSold).extend({
-        required: {
-            params: true,           //"^(0?[1-9]|1[0-2])/(0?[1-9]|1[0-9]|2[0-9]|3[01])/\d{4}$"
+        required: {         // If Html input type is "text" then "Pattern" can be used.
+            params: true,   //Pattern: "^(0?[1-9]|1[0-2])/(0?[1-9]|1[0-9]|2[0-9]|3[01])/\d{4}$"
             message: "Please enter Date."
         }
     });
@@ -127,7 +142,7 @@ function saleViewModel() {
     }
 
     self.addSaleModal = function () {
-        self.selectedSale(new saleModel(saleModel));
+        self.selectedSale(new newSale());
         $("#modalTitle").html("Add New Sale");
         $("#btnAdd").show();
         $("#btnUpdate").hide();

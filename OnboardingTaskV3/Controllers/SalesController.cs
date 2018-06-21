@@ -12,13 +12,6 @@ namespace OnboardingTaskV3.Controllers
     {
         CustomerDBContext db = new CustomerDBContext();
         
-        //public JsonResult GetCustomers()
-        //{
-        //    List<Customer> customerList = db.Customers.ToList();
-        //    var ListOfCustomers = new SelectList(customerList, "Id", "Name");
-        //    return Json(ListOfCustomers, JsonRequestBehavior.AllowGet);
-        //}
-
         // GET: Sales
         public ActionResult Index()
         {
